@@ -10,7 +10,7 @@ import json
 def stitch():
     rospy.init_node("stitch_cameras")
     left_topic = "/camera1/color/image_raw"
-    right_topic = "/camera2/color/image_raw"
+    right_topic = "/camera2/depth/image_rect_raw"
     
     with open('data.json', 'r') as f:
         data = json.load(f)
