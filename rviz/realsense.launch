@@ -1,0 +1,94 @@
+<launch>
+  <arg name="serial_no"              default=""/>
+  <arg name="json_file_path"         default=""/>
+  <arg name="camera"                default="camera1"/>
+  <arg name="tf_prefix_camera1"         default="$(arg camera)"/>
+  
+  <group ns="$(arg camera)">
+    <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+      <arg name="serial_no"         value="$(arg serial_no)"/>
+      <arg name="json_file_path"    value="$(arg json_file_path)"/>
+      <arg name="depth_width"       value="640"/>
+      <arg name="depth_height"      value="480"/>
+      <arg name="depth_fps"         value="30"/>
+      <arg name="color_width"       value="640"/>
+      <arg name="color_height"      value="480"/>
+      <arg name="color_fps"         value="30"/>
+      <arg name="enable_depth"      value="true"/>
+      <arg name="enable_color"      value="true"/>
+      <arg name="enable_infra1"     value="false"/>
+      <arg name="enable_infra2"     value="false"/>
+      <arg name="enable_fisheye"    value="false"/>
+      <arg name="enable_gyro"       value="false"/>
+      <arg name="enable_accel"      value="false"/>
+      <arg name="enable_pointcloud" value="true"/>
+      <arg name="enable_sync"       value="true"/>
+      <arg name="tf_prefix"         value="$(arg tf_prefix_camera1)"/>
+    </include>
+
+    <node name="rviz" pkg="rviz" type="rviz"
+          args="-d $(find realsense2_camera)/rviz/pointcloud.rviz"
+          required="true" 
+          output="screen"/>
+  </group>
+  
+
+  <group ns="rviz_camera1">
+    <node pkg="tf" type="static_transform_publisher" name="camera_broadcaster"
+        args="0.1 0.1 -0.5 0 0 0 1 map rviz_camera1 10" />
+    <node name="camera_info" pkg="rostopic" type="rostopic"
+        args="pub camera_info sensor_msgs/CameraInfo
+      '{header: {seq: 0, stamp: {secs: 0, nsecs: 0}, frame_id: 'rviz_camera1'},
+        height: 480, width: 640, distortion_model: 'plumb_bob',
+        D: [0],
+        K: [500.0, 0.0, 320, 0.0, 500.0, 240.0, 0.0, 0.0, 1.0],
+        R: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
+        P: [500.0, 0.0, 320, 0.0, 0.0, 500, 240, 0.0, 0.0, 0.0, 1.0, 0.0],
+        binning_x: 0, binning_y: 0,
+        roi: {x_offset: 0, y_offset: 0, height: 480, width: 640, do_rectify: false}}' -r 2"
+        output="screen"/>
+  </group>
+
+  <group ns="rviz_camera2">
+    <node pkg="tf" type="static_transform_publisher" name="camera_broadcaster"
+        args="0.1 -0.1 -2.5 0.01 0 0.02 1 map rviz_camera2 10" />
+    <node name="camera_info" pkg="rostopic" type="rostopic"
+        args="pub camera_info sensor_msgs/CameraInfo
+      '{header: {seq: 0, stamp: {secs: 0, nsecs: 0}, frame_id: 'rviz_camera2'},
+        height: 720, width: 1280, distortion_model: 'plumb_bob',
+        D: [0],
+        K: [300.0, 0.0, 640, 0.0, 300.0, 360.0, 0.0, 0.0, 1.0],
+        R: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
+        P: [300.0, 0.0, 640, 0.0, 0.0, 300, 360, 0.0, 0.0, 0.0, 1.0, 0.0],
+        binning_x: 0, binning_y: 0,
+        roi: {x_offset: 0, y_offset: 0, height: 720, width: 1280, do_rectify: false}}' -r 2"
+        output="screen"/>
+  </group>
+
+  <group ns="rviz1/rviz_camera1/image">
+    <rosparam param="disable_pub_plugins">
+      - 'image_transport/compressed'
+      - 'image_transport/compressedDepth'
+      - 'image_transport/theora'
+    </rosparam>
+  </group>
+
+  <group ns="rviz1/rviz_camera2/image">
+  <rosparam param="disable_pub_plugins">
+    - 'image_transport/compressed'
+    - 'image_transport/compressedDepth'
+    - 'image_transport/theora'
+  </rosparam>
+  </group>
+
+  <node pkg="tf" type="static_transform_publisher" name="broadcaster2" args="0 0 0.08 0 0 0 /map /camera_mount 100" />
+  <node pkg="tf" type="static_transform_publisher" name="broadcaster3" args="0 0 0 0 0 0 /camera_mount /camera_bottom_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="broadcaster1" args="0.01 0 0.03 0 0.785398 0 /camera_mount /camera_top_link 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="broadcaster4" args="0 0 0 0 0 -1.57 /camera_top_link /camera1_rgb_frame1 100" />
+  <node pkg="tf" type="static_transform_publisher" name="broadcaster5" args="0 0 0 0 1.57 0 /camera1_rgb_frame1 /camera1_rgb_frame 100" />
+<!--
+rs-enumerate-devices | grep Serial
+roslaunch realsense2_camera realsense2.launch initial_reset:=true
+-->
+</launch>
