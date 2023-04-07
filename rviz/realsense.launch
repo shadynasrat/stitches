@@ -81,12 +81,7 @@
   </rosparam>
   </group>
 
-  <node pkg="tf" type="static_transform_publisher" name="broadcaster2" args="0 0 0.08 0 0 0 /map /camera_mount 100" />
-  <node pkg="tf" type="static_transform_publisher" name="broadcaster3" args="0 0 0 0 0 0 /camera_mount /camera_bottom_link 100" />
-  <node pkg="tf" type="static_transform_publisher" name="broadcaster1" args="0.01 0 0.03 0 0.785398 0 /camera_mount /camera_top_link 100" />
-
-  <node pkg="tf" type="static_transform_publisher" name="broadcaster4" args="0 0 0 0 0 -1.57 /camera_top_link /camera1_rgb_frame1 100" />
-  <node pkg="tf" type="static_transform_publisher" name="broadcaster5" args="0 0 0 0 1.57 0 /camera1_rgb_frame1 /camera1_rgb_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="broadcaster2" args="0 0 0.08 0 0 0 /map /camera1_link 100" />
 <!--
 rs-enumerate-devices | grep Serial
 roslaunch realsense2_camera realsense2.launch initial_reset:=true
